@@ -23,4 +23,4 @@ WORKDIR "/var/www"
 RUN npm install
 
 VOLUME ["/var/www/data"]
-ENTRYPOINT ["/usr/local/bin/node", "/var/www/index.js", "-p", "3001", "--asr", "./conf_no.asr"]
+ENTRYPOINT ["/usr/local/bin/node", "/var/www/index.js", "-p", "3001"]
