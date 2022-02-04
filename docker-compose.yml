@@ -1,20 +1,22 @@
 version: '2.1'
 services:
   nodeodm-1:
-    image: opendronemap/nodeodm
+    image: rmitrev/nodeodm_efs
     container_name: nodeodm-1
     ports:
       - "3000"
     restart: on-failure:10
   clusterodm:
-    image: opendronemap/clusterodm
+    image: rmitrev/clusterodm
     container_name: clusterodm
     ports:
-      - "4000:3000"
+      - "3001:3000"
       - "8080:8080"
       - "10000:10000"
     volumes:
       - ./docker/data:/var/www/data
+      - ./conf_no.asr:/var/www/conf_no.asr
+    entrypoint: /usr/local/bin/node /var/www/index.js -p 3001 --asr ./conf_no.asr
     restart: on-failure:10
     depends_on:
       - nodeodm-1
