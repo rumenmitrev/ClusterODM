@@ -10,7 +10,7 @@ services:
     image: rmitrev/clusterodm
     container_name: clusterodm
     ports:
-      - "3001:3000"
+      - "3001:3001"
       - "8080:8080"
       - "10000:10000"
     volumes:
