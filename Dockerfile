@@ -6,7 +6,7 @@ EXPOSE 3001
 USER root
 
 RUN apt update && apt install -y telnet curl wget && \
-  wget https://github.com/rancher/machine/releases/download/v0.15.0-rancher73/rancher-machine-amd64.tar.gz && \
+  wget https://github.com/rancher/machine/releases/download/v0.15.0-rancher75/rancher-machine-amd64.tar.gz && \
   tar xzf rancher-machine-amd64.tar.gz && \
   mv rancher-machine /usr/local/bin/docker-machine
   #  base=https://gitlab-docker-machine-downloads.s3.amazonaws.com/main/ && \
