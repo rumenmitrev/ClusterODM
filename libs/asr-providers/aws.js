@@ -167,6 +167,11 @@ module.exports = class AWSAsrProvider extends AbstractASRProvider{
             args.push("--amazonec2-monitoring");
         }
 
+         if (this.getConfig("ebsoptimized")){
+            args.push("--amazonec2-use-ebs-optimized-instance");
+        }
+
+
         if (this.getConfig("spot")) {
             args.push("--amazonec2-request-spot-instance");
             args.push("--amazonec2-spot-price");
@@ -181,6 +186,12 @@ module.exports = class AWSAsrProvider extends AbstractASRProvider{
         if (this.getConfig("engineInstallUrl")){
             args.push("--engine-install-url")
             args.push(this.getConfig("engineInstallUrl"));
+        }
+
+        
+        if (this.getConfig("userdata")){
+            args.push("--amazonec2-userdata")
+            args.push(this.getConfig("userdata"));
         }
 
 	if (this.getConfig("zone").length > 0){
@@ -198,10 +209,6 @@ module.exports = class AWSAsrProvider extends AbstractASRProvider{
             args.push(this.getConfig("subnet"));
         }
 
-  if (this.getConfig("ebsoptimized").length > 0){
-            args.push("--amazonec2-use-ebs-optimized-instance")
-            args.push(this.getConfig("ebsoptimized"));
-        }
 
 	if (this.getConfig("iamrole").length > 0){
             args.push("--amazonec2-iam-instance-profile")
