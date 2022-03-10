@@ -198,6 +198,10 @@ module.exports = class AWSAsrProvider extends AbstractASRProvider{
             args.push(this.getConfig("subnet"));
         }
 
+  if (this.getConfig("ebsoptimized").length > 0){
+            args.push("--amazonec2-use-ebs-optimized-instance")
+            args.push(this.getConfig("ebsoptimized"));
+        }
 
 	if (this.getConfig("iamrole").length > 0){
             args.push("--amazonec2-iam-instance-profile")
