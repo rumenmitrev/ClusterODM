@@ -16,6 +16,7 @@ services:
     volumes:
       - ./docker/data:/var/www/data
       - ./conf_no.asr:/var/www/conf_no.asr
+      - ./userdata:/var/www/userdata
     entrypoint: /usr/local/bin/node /var/www/index.js -p 3001 --log-level debug --asr ./conf_no.asr
     restart: on-failure:10
     depends_on:
