@@ -1,7 +1,7 @@
 version: '2.1'
 services:
   nodeodm-1:
-    image: rmitrev/nodeodm_efs
+    image: rmitrev/nodeodm_efs:r5a
     container_name: nodeodm-1
     ports:
       - "3000"
