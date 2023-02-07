@@ -32,6 +32,12 @@ Or with docker:
 docker run --rm -ti -p 3000:3000 -p 8080:8080 opendronemap/clusterodm [parameters]
 ```
 
+Or with apptainer, after cd into ClusterODM directory:
+
+```bash
+apptainer run docker://opendronemap/clusterodm [parameters]
+```
+
 Then connect to the CLI and connect new [NodeODM](https://github.com/OpenDroneMap/NodeODM) instances:
 
 ```bash
@@ -95,6 +101,84 @@ ClusterODM can run as a self-contained executable on Windows without the need fo
 ```bash
 clusterodm.exe
 ```
+
+## HPC set up with SLURM
+
+You can write a SLURM script to schedule and set up available nodes with NodeODM for the ClusterODM to be wired to if you are on the HPC. Using SLURM will decrease the amount of time and processes needed to set up nodes for ClusterODM each time. This provides an easier way for user to use ODM on the HPC.
+
+To setup HPC with SLURM, you must make sure SLURM is installed.
+
+SLURM script will be different from cluster to cluster, depending on which nodes in the cluster that you have. However, the main idea is we want to run NodeODM on each node once, and by default, each NodeODM will be running on port 3000. Apptainer will be taking available ports starting from port 3000, so if your node's port 3000 is open, by default NodeODM will be run on that node. After that, we want to run ClusterODM on the head node and connect the running NodeODMs to the ClusterODM. With that, we will have a functional ClusterODM running on HPC.
+
+Here is an example of SLURM script assigning nodes 48, 50, 51 to run NodeODM. You can freely change and use it depending on your system:
+
+![image](https://user-images.githubusercontent.com/70782465/214411148-cdf43e44-9756-4115-9195-d1f36b3a31b9.png)
+
+You can check for available nodes using sinfo:
+
+```
+sinfo
+```
+
+Run the following command to schedule using the SLURM script:
+
+```
+sbatch sample.slurm
+```
+
+You can also check for currently running jobs using squeue:
+
+```
+squeue -u $user
+```
+
+Unfortunately, SLURM does not handle assigning jobs to the head node. Hence, if we want to run ClusterODM on the head node, we have to run it locally. After that, you can connect to the CLI and wire the NodeODMs to the ClusterODMs. Here is an example following the sample SLURM script:
+
+```
+telnet localhost 8080
+> NODE ADD node48 3000
+> NODE ADD node50 3000
+> NODE ADD node51 3000
+> NODE LIST
+```
+
+You should always check to make sure which ports are being used to run NodeODM if ClusterODM is not wired correctly.
+
+It is also possible to pre-populate nodes using JSON. If starting ClusterODM from apptainer or docker, the relevant JSON is available at `docker/data/nodes.json`. Contents might look similar to the following:
+
+```javascript
+[
+        {"hostname":"node48","port":"3000","token":""},
+        {"hostname":"node50","port":"3000","token":""},
+        {"hostname":"node51","port":"3000","token":""}
+]
+
+```
+
+After finish hosting ClusterODM on the head node and finish wiring it to the NodeODM, you can try tunneling to see if ClusterODM works as expected. Open another shell window in your local machine and tunnel them to the HPC using the following command:
+
+```
+ssh -L localhost:10000:localhost:10000 user@hostname
+```
+
+Replace user and hostname with your appropriate username and the hpc address. Basically, this command will tunnel the port of the hpc to your local port. After this, open a browser in your local machine and connect to `http://localhost:10000`. Port 10000 is where ClusterODM's administrative web interface is hosted at. This is what it looks like:
+
+![image](https://user-images.githubusercontent.com/70782465/214938402-707bee90-ea17-4573-82f8-74096d9caf03.png)
+
+Here you can check the NodeODMs status and even add or delete working nodes.
+
+After that, do tunneling for port 3000 of the HPC to your local machine:
+
+```
+ssh -L localhost:3000:localhost:3000 user@hostname
+```
+
+Port 3000 is ClusterODM's proxy. This is the place we assign tasks to ClusterODM. Once again, connect to `http://localhost:3000` with your browser after tunneling. Here, you can Assign Tasks and observe the tasks' processes.
+
+![image](https://user-images.githubusercontent.com/70782465/214938234-113f99dc-f69e-4e78-a782-deaf94e986b0.png)
+
+After adding images in this browser, you can press Start Task and see ClusterODM assigning tasks to the nodes you have wired to. Go for a walk and check the progress.
+
 
 ## Roadmap
 
